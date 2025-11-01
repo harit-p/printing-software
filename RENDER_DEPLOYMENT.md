@@ -61,23 +61,42 @@ Deploy your full-stack printing software (Backend + Frontend) on Render in 3 mai
    Health Check Path: /health
    ```
 
-### Step 3: Connect Database to Backend
-1. Scroll to **"Environment Variables"** section
-2. Click **"Add from Database"**
-3. Select your `printing-software-db`
-4. Render will auto-add:
-   - `DATABASE_URL`
-   - Or individual variables: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+### Step 3: Add Environment Variables
+Scroll down to **"Environment Variables"** section and add these one by one:
 
-### Step 4: Add Manual Environment Variables
-Click **"Add Environment Variable"** and add these:
+**Click "Add Environment Variable" for each:**
 
-| Key | Value |
-|-----|-------|
-| `NODE_ENV` | `production` |
-| `PORT` | `10000` |
-| `JWT_SECRET` | `printing-jwt-secret-2024-secure-key-abc123` |
-| `JWT_REFRESH_SECRET` | `printing-refresh-secret-2024-secure-key-xyz789` |
+| Key | Value | How to Get |
+|-----|-------|------------|
+| `NODE_ENV` | `production` | Type manually |
+| `PORT` | `10000` | Type manually |
+| `DB_HOST` | `[Your DB Host]` | Copy from database "Internal Database URL" |
+| `DB_PORT` | `5432` | Type manually |
+| `DB_NAME` | `printing_software` | Same as database name |
+| `DB_USER` | `[Your DB User]` | Copy from database connection info |
+| `DB_PASSWORD` | `[Your DB Password]` | Copy from database connection info |
+| `JWT_SECRET` | `printing-jwt-secret-2024-secure-key-abc123` | Type manually |
+| `JWT_REFRESH_SECRET` | `printing-refresh-secret-2024-secure-key-xyz789` | Type manually |
+
+**How to get database connection details:**
+1. Go to your `printing-software-db` database
+2. Click on **"Info"** tab
+3. Look for **"Internal Database URL"** - it looks like:
+   ```
+   postgresql://user:password@host:5432/database
+   ```
+4. Extract the values:
+   - **DB_HOST**: The part after `@` and before `:5432` (e.g., `dpg-xxxxx-a.oregon-postgres.render.com`)
+   - **DB_USER**: The part after `postgresql://` and before `:` (e.g., `printing_software_user`)
+   - **DB_PASSWORD**: The part after first `:` and before `@`
+   - **DB_NAME**: The part after last `/` (e.g., `printing_software`)
+
+**Alternative: Use DATABASE_URL (Simpler)**
+Instead of individual variables, you can use just one:
+- **Key**: `DATABASE_URL`
+- **Value**: Copy the entire "Internal Database URL" from your database
+
+Then update your `backend/config/database.js` to use `DATABASE_URL` if present.
 
 ### Step 5: Deploy Backend
 1. Click **"Create Web Service"**
