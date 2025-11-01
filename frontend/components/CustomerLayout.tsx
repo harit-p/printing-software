@@ -28,7 +28,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         Cookies.set('role', 'customer', { expires: 7, path: '/' })
       }
       
-      setIsLoggedIn(!!customerToken || (currentToken && currentRole === 'customer'))
+      setIsLoggedIn(!!customerToken || !!(currentToken && currentRole === 'customer'))
     }
     checkAuth()
     
