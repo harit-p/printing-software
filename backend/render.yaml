@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: printing-software-backend
+    env: node
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromDatabase:
+          name: printing-software-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: printing-software-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: printing-software-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: printing-software-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: printing-software-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+
+databases:
+  - name: printing-software-db
+    databaseName: printing_software
+    user: postgres

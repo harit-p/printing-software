@@ -67,6 +67,15 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
