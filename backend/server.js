@@ -11,7 +11,13 @@ const PORT = process.env.PORT || 5000;
 // Middleware - CORS configuration (must be before routes)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin === 'http://localhost:3000' || origin === 'http://127.0.0.1:3000') {
+  const allowedOrigins = [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000',
+    'https://printing-software-frontend.onrender.com'
+  ];
+  
+  if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -26,7 +32,7 @@ app.use((req, res, next) => {
 
 // Also use cors middleware for additional support
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://printing-software-frontend.onrender.com'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
