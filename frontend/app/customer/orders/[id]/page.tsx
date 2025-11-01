@@ -6,10 +6,6 @@ import { orderAPI } from '@/lib/api'
 import { useParams } from 'next/navigation'
 import { format } from 'date-fns'
 
-export function generateStaticParams() {
-  return []
-}
-
 export default function OrderDetailsPage() {
   const params = useParams()
   const [order, setOrder] = useState<any>(null)
