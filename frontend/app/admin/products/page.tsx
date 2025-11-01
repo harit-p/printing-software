@@ -99,40 +99,40 @@ export default function AdminProductsPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-8 animate-slide-up">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Product Listing</h1>
+          <h1 className="text-4xl font-bold text-gradient">Product Listing</h1>
           <button
             onClick={() => {
               setShowForm(!showForm)
               setEditingProduct(null)
               setFormData({ name: '', category_id: '', description: '', price: '', image_url: '', is_active: true })
             }}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition"
+            className="btn-primary"
           >
             {showForm ? 'Cancel' : 'Add Product'}
           </button>
         </div>
 
         {showForm && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">{editingProduct ? 'Edit Product' : 'Add Product'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="card p-8">
+            <h2 className="text-2xl font-bold mb-6 text-gradient">{editingProduct ? 'Edit Product' : 'Add Product'}</h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="input-field"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                 <select
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="input-field"
                   value={formData.category_id}
                   onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                 >
@@ -145,49 +145,49 @@ export default function AdminProductsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                 <textarea
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="input-field"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="input-field"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Image URL</label>
                 <input
                   type="url"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="input-field"
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                 />
               </div>
               <div>
-                <label className="flex items-center">
+                <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="mr-2"
+                    className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                   />
-                  <span className="text-sm font-medium text-gray-700">Active</span>
+                  <span className="text-sm font-semibold text-gray-700">Active</span>
                 </label>
               </div>
               <button
                 type="submit"
-                className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition"
+                className="btn-primary"
               >
                 {editingProduct ? 'Update Product' : 'Create Product'}
               </button>
@@ -196,40 +196,43 @@ export default function AdminProductsPage() {
         )}
 
         {loading ? (
-          <div className="text-center py-12">Loading products...</div>
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            <p className="mt-4 text-gray-600">Loading products...</p>
+          </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="card overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {products.map((product) => (
-                  <tr key={product.id}>
+                  <tr key={product.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{product.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.category_name || 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">₹{product.price}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-primary-600">₹{product.price}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs rounded-full ${product.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      <span className={`badge ${product.is_active ? 'badge-success' : 'badge-danger'}`}>
                         {product.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                       <button
                         onClick={() => handleEdit(product)}
-                        className="text-blue-600 hover:text-blue-700"
+                        className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(product.id.toString())}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
                       >
                         Delete
                       </button>

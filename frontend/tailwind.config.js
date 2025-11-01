@@ -30,6 +30,28 @@ module.exports = {
         'slide-up': 'slideUp 0.5s ease-out',
         'bounce-slow': 'bounceSlow 2s infinite',
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        bounceSlow: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient': 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+      },
+      textGradient: {
+        primary: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+      },
     },
   },
   plugins: [],
