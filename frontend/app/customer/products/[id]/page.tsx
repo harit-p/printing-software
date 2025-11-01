@@ -10,6 +10,10 @@ import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { getAuthToken } from '@/lib/auth'
 
+export function generateStaticParams() {
+  return []
+}
+
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
