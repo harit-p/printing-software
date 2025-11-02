@@ -13,6 +13,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   const router = useRouter()
   const [cartCount, setCartCount] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const checkAuth = () => {
@@ -206,13 +207,168 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
               )}
             </nav>
             {/* Mobile menu button */}
-            <button className="md:hidden text-gray-700">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-gray-700 hover:text-primary-600 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
+        
+        {/* Mobile menu dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 bg-white">
+            <nav className="px-4 py-4 space-y-2">
+              {/* Public menu items */}
+              <Link
+                href="/customer/products"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  pathname === '/customer/products'
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                }`}
+              >
+                <FiPackage className="w-5 h-5" />
+                <span>Products</span>
+              </Link>
+              <Link
+                href="/customer/categories"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  pathname === '/customer/categories'
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                }`}
+              >
+                <FiList className="w-5 h-5" />
+                <span>Categories</span>
+              </Link>
+              <Link
+                href="/customer/price-list"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  pathname === '/customer/price-list'
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                }`}
+              >
+                <FiList className="w-5 h-5" />
+                <span>Price List</span>
+              </Link>
+
+              {/* Authenticated menu items */}
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/customer/cart"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`relative flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pathname === '/customer/cart'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                    }`}
+                  >
+                    <FiShoppingCart className="w-5 h-5" />
+                    <span>Cart</span>
+                    {cartCount > 0 && (
+                      <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    href="/customer/orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pathname === '/customer/orders'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                    }`}
+                  >
+                    <FiFileText className="w-5 h-5" />
+                    <span>My Orders</span>
+                  </Link>
+                  <Link
+                    href="/customer/wallet"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pathname === '/customer/wallet'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                    }`}
+                  >
+                    <FiDollarSign className="w-5 h-5" />
+                    <span>Add Money</span>
+                  </Link>
+                  <Link
+                    href="/customer/complaints"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pathname === '/customer/complaints'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                    }`}
+                  >
+                    <FiHelpCircle className="w-5 h-5" />
+                    <span>Complaints</span>
+                  </Link>
+                  <Link
+                    href="/customer/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      pathname === '/customer/profile'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+                    }`}
+                  >
+                    <FiUser className="w-5 h-5" />
+                    <span>Profile</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false)
+                      handleLogout()
+                    }}
+                    className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200"
+                  >
+                    <FiLogOut className="w-5 h-5" />
+                    <span>Logout</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/customer/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-all duration-200"
+                  >
+                    <FiLogIn className="w-5 h-5" />
+                    <span>Login</span>
+                  </Link>
+                  <Link
+                    href="/customer/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-md transition-all duration-200"
+                  >
+                    <FiUserPlus className="w-5 h-5" />
+                    <span>Sign Up</span>
+                  </Link>
+                </>
+              )}
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
