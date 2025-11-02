@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleLogout = () => {
     clearAuth()
-    router.push('/admin/login')
+    router.push('/customer/home')
   }
 
   const menuItems = [
