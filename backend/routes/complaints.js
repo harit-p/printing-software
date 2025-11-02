@@ -4,7 +4,6 @@ const { query } = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Get all complaints
 router.get('/', authenticate, async (req, res) => {
   try {
     let sql = `
@@ -17,13 +16,11 @@ router.get('/', authenticate, async (req, res) => {
     const params = [];
     let paramCount = 1;
 
-    // Customer can only see their complaints
     if (req.user.role === 'customer') {
       sql += ` AND c.user_id = $${paramCount++}`;
       params.push(req.user.id);
     }
 
-    // Status filter
     if (req.query.status) {
       sql += ` AND c.status = $${paramCount++}`;
       params.push(req.query.status);
@@ -39,7 +36,6 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// Get complaint by ID
 router.get('/:id', authenticate, async (req, res) => {
   try {
     let sql = `
@@ -69,7 +65,6 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
-// Create complaint (Customer only)
 router.post('/', authenticate, [
   body('subject').notEmpty().trim().withMessage('Subject is required'),
   body('description').notEmpty().trim().withMessage('Description is required'),
@@ -84,7 +79,6 @@ router.post('/', authenticate, [
     const { subject, description, order_id } = req.body;
     const user_id = req.user.id;
 
-    // Verify order belongs to user if provided
     if (order_id) {
       const orderCheck = await query('SELECT * FROM orders WHERE id = $1 AND user_id = $2', [order_id, user_id]);
       if (orderCheck.rows.length === 0) {
@@ -108,7 +102,6 @@ router.post('/', authenticate, [
   }
 });
 
-// Update complaint status (Admin only)
 router.put('/:id/status', authenticate, [
   body('status').isIn(['open', 'in_progress', 'resolved', 'closed']).withMessage('Invalid status'),
   body('response').optional(),

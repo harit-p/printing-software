@@ -3,7 +3,6 @@ const router = express.Router();
 const { query } = require('../config/database');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
 
-// Get all customers (Admin only)
 router.get('/', authenticate, authorizeAdmin, async (req, res) => {
   try {
     const { search } = req.query;
@@ -36,7 +35,6 @@ router.get('/', authenticate, authorizeAdmin, async (req, res) => {
   }
 });
 
-// Get customer by ID (Admin only)
 router.get('/:id', authenticate, authorizeAdmin, async (req, res) => {
   try {
     const customerResult = await query(
@@ -52,7 +50,6 @@ router.get('/:id', authenticate, authorizeAdmin, async (req, res) => {
 
     const customer = customerResult.rows[0];
 
-    // Get customer stats
     const statsResult = await query(
       `SELECT 
         COUNT(*) as total_orders,
@@ -65,7 +62,6 @@ router.get('/:id', authenticate, authorizeAdmin, async (req, res) => {
 
     customer.stats = statsResult.rows[0];
 
-    // Get recent orders
     const ordersResult = await query(
       `SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`,
       [req.params.id]

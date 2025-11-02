@@ -4,7 +4,6 @@ const { query } = require('../config/database');
 const { authenticate, authorizeAdmin, authorizeCustomer } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Get all orders
 router.get('/', authenticate, async (req, res) => {
   try {
     let sql = `
@@ -16,13 +15,11 @@ router.get('/', authenticate, async (req, res) => {
     const params = [];
     let paramCount = 1;
 
-    // Customer can only see their orders
     if (req.user.role === 'customer') {
       sql += ` AND o.user_id = $${paramCount++}`;
       params.push(req.user.id);
     }
 
-    // Admin filters
     if (req.user.role === 'admin' && req.query.status) {
       sql += ` AND o.status = $${paramCount++}`;
       params.push(req.query.status);
@@ -32,7 +29,6 @@ router.get('/', authenticate, async (req, res) => {
 
     const result = await query(sql, params);
 
-    // Get order items for each order
     const ordersWithItems = await Promise.all(
       result.rows.map(async (order) => {
         const items = await query(
@@ -53,7 +49,6 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// Get order by ID
 router.get('/:id', authenticate, async (req, res) => {
   try {
     let sql = `
@@ -64,7 +59,6 @@ router.get('/:id', authenticate, async (req, res) => {
     `;
     const params = [req.params.id];
 
-    // Customer can only see their orders
     if (req.user.role === 'customer') {
       sql += ` AND o.user_id = $2`;
       params.push(req.user.id);
@@ -78,7 +72,6 @@ router.get('/:id', authenticate, async (req, res) => {
 
     const order = orderResult.rows[0];
 
-    // Get order items
     const itemsResult = await query(
       `SELECT oi.*, p.name as product_name, p.image_url
        FROM order_items oi
@@ -96,7 +89,6 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
-// Create order (Customer only)
 router.post('/', authenticate, authorizeCustomer, [
   body('items').isArray({ min: 1 }).withMessage('At least one item is required'),
   body('payment_method').notEmpty().withMessage('Payment method is required'),
@@ -110,7 +102,6 @@ router.post('/', authenticate, authorizeCustomer, [
     const { items, payment_method, notes, address } = req.body;
     const user_id = req.user.id;
 
-    // Get cart items or use provided items
     let cartItems = [];
     if (items && items.length > 0) {
       cartItems = items;
@@ -126,7 +117,6 @@ router.post('/', authenticate, authorizeCustomer, [
       return res.status(400).json({ error: 'Cart is empty' });
     }
 
-    // Calculate total
     let total = 0;
     const orderItems = [];
 
@@ -148,10 +138,8 @@ router.post('/', authenticate, authorizeCustomer, [
       });
     }
 
-    // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    // Create order
     const orderResult = await query(
       `INSERT INTO orders (order_number, user_id, total_amount, status, payment_status, payment_method, notes, shipping_address, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
@@ -170,7 +158,6 @@ router.post('/', authenticate, authorizeCustomer, [
 
     const order = orderResult.rows[0];
 
-    // Create order items
     for (const item of orderItems) {
       await query(
         `INSERT INTO order_items (order_id, product_id, quantity, price, total, specifications, created_at)
@@ -186,7 +173,6 @@ router.post('/', authenticate, authorizeCustomer, [
       );
     }
 
-    // Deduct from wallet if payment method is wallet
     if (payment_method === 'wallet') {
       const walletResult = await query('SELECT balance FROM wallets WHERE user_id = $1', [user_id]);
       if (walletResult.rows.length > 0) {
@@ -197,21 +183,18 @@ router.post('/', authenticate, authorizeCustomer, [
             [total, user_id]
           );
 
-          // Record transaction
           await query(
             `INSERT INTO transactions (user_id, order_id, type, amount, description, created_at)
              VALUES ($1, $2, 'debit', $3, $4, NOW())`,
             [user_id, order.id, total, `Payment for order ${orderNumber}`]
           );
         } else {
-          // Revert order status
           await query('UPDATE orders SET payment_status = $1 WHERE id = $2', ['failed', order.id]);
           return res.status(400).json({ error: 'Insufficient wallet balance' });
         }
       }
     }
 
-    // Clear cart
     await query('DELETE FROM cart_items WHERE user_id = $1', [user_id]);
 
     res.status(201).json({ order });
@@ -221,7 +204,6 @@ router.post('/', authenticate, authorizeCustomer, [
   }
 });
 
-// Update order status (Admin only)
 router.put('/:id/status', authenticate, authorizeAdmin, [
   body('status').isIn(['pending', 'confirmed', 'in_production', 'completed', 'cancelled']).withMessage('Invalid status'),
 ], async (req, res) => {

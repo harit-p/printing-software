@@ -4,7 +4,6 @@ const { query } = require('../config/database');
 const { authenticate, authorizeCustomer } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Get wallet balance (Customer only)
 router.get('/', authenticate, authorizeCustomer, async (req, res) => {
   try {
     const result = await query(
@@ -13,7 +12,6 @@ router.get('/', authenticate, authorizeCustomer, async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      // Create wallet if doesn't exist
       const newWallet = await query(
         'INSERT INTO wallets (user_id, balance, created_at) VALUES ($1, 0, NOW()) RETURNING *',
         [req.user.id]
@@ -28,7 +26,6 @@ router.get('/', authenticate, authorizeCustomer, async (req, res) => {
   }
 });
 
-// Add money to wallet (Customer only)
 router.post('/add-money', authenticate, authorizeCustomer, [
   body('amount').isFloat({ min: 1 }).withMessage('Amount must be at least 1'),
   body('payment_method').notEmpty().withMessage('Payment method is required'),
@@ -42,7 +39,6 @@ router.post('/add-money', authenticate, authorizeCustomer, [
     const { amount, payment_method } = req.body;
     const user_id = req.user.id;
 
-    // Get or create wallet
     let walletResult = await query('SELECT * FROM wallets WHERE user_id = $1', [user_id]);
     if (walletResult.rows.length === 0) {
       await query(
@@ -52,13 +48,11 @@ router.post('/add-money', authenticate, authorizeCustomer, [
       walletResult = await query('SELECT * FROM wallets WHERE user_id = $1', [user_id]);
     }
 
-    // Update balance
     await query(
       'UPDATE wallets SET balance = balance + $1, updated_at = NOW() WHERE user_id = $2',
       [amount, user_id]
     );
 
-    // Record transaction
     const transactionResult = await query(
       `INSERT INTO transactions (user_id, type, amount, description, payment_method, created_at)
        VALUES ($1, 'credit', $2, $3, $4, NOW())
@@ -66,7 +60,6 @@ router.post('/add-money', authenticate, authorizeCustomer, [
       [user_id, amount, `Wallet top-up via ${payment_method}`, payment_method]
     );
 
-    // Generate UPI payment link (mock for now)
     const upiId = `printing-software@pay`;
     const transactionId = `TXN${Date.now()}`;
 
@@ -86,7 +79,6 @@ router.post('/add-money', authenticate, authorizeCustomer, [
   }
 });
 
-// Get wallet transactions (Customer only)
 router.get('/transactions', authenticate, authorizeCustomer, async (req, res) => {
   try {
     const result = await query(

@@ -15,14 +15,11 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    // Check auth status on mount and when pathname changes
     const checkAuth = () => {
-      // Check if customer token exists (even if current session is different)
       const customerToken = Cookies.get('token_customer')
       const currentToken = Cookies.get('token')
       const currentRole = Cookies.get('role')
       
-      // If we have customer token but current session is not customer, switch it
       if (customerToken && currentRole !== 'customer') {
         Cookies.set('token', customerToken, { expires: 7, path: '/' })
         Cookies.set('role', 'customer', { expires: 7, path: '/' })
@@ -32,12 +29,10 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
     }
     checkAuth()
     
-    // Listen for storage/cookie changes (when user logs in/out in another tab)
     const handleStorageChange = () => {
       checkAuth()
     }
     
-    // Check periodically for cookie changes
     const interval = setInterval(checkAuth, 1000)
     
     window.addEventListener('storage', handleStorageChange)
@@ -49,7 +44,6 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   }, [pathname])
 
   useEffect(() => {
-    // Fetch cart count only if logged in
     const fetchCartCount = async () => {
       if (!isLoggedIn) return
       try {

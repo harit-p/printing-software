@@ -21,13 +21,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
 
   useEffect(() => {
-    // Check if admin token exists (even if current session is different)
     const checkAuth = () => {
       const adminToken = Cookies.get('token_admin')
       const currentToken = Cookies.get('token')
       const currentRole = Cookies.get('role')
       
-      // If we have admin token but current session is not admin, switch it
       if (adminToken && currentRole !== 'admin') {
         Cookies.set('token', adminToken, { expires: 7, path: '/' })
         Cookies.set('role', 'admin', { expires: 7, path: '/' })
@@ -36,7 +34,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     
     checkAuth()
     
-    // Check periodically for cookie changes
     const interval = setInterval(checkAuth, 1000)
     
     return () => {

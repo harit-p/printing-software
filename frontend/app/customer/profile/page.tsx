@@ -37,7 +37,6 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Note: Profile update endpoint would need to be added to backend
     toast.success('Profile update feature coming soon!')
     setEditMode(false)
   }

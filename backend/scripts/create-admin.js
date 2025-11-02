@@ -6,7 +6,6 @@ async function createAdmin() {
     const email = 'admin@printing.com';
     const password = 'admin123';
     
-    // Check if admin exists
     const existing = await query('SELECT * FROM users WHERE email = $1', [email]);
     
     if (existing.rows.length > 0) {
@@ -14,10 +13,8 @@ async function createAdmin() {
       return;
     }
     
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Create admin user
     await query(
       `INSERT INTO users (name, email, password, phone, role, created_at)
        VALUES ($1, $2, $3, $4, $5, NOW())`,

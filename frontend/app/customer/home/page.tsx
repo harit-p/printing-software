@@ -15,7 +15,6 @@ export default function CustomerHome() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // These API calls don't require authentication
         const [productsRes, categoriesRes] = await Promise.all([
           productAPI.getAll({ limit: 8 }).catch(() => ({ data: { products: [] } })),
           categoryAPI.getAll().catch(() => ({ data: { categories: [] } })),

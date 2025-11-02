@@ -4,7 +4,6 @@ const { query } = require('../config/database');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Get all categories with hierarchy (Customer & Admin)
 router.get('/', async (req, res) => {
   try {
     const result = await query(
@@ -14,7 +13,6 @@ router.get('/', async (req, res) => {
       `
     );
 
-    // Build hierarchical structure
     const buildHierarchy = (items, parentId = null, level = 0) => {
       return items
         .filter(item => item.parent_id === parentId)
@@ -33,7 +31,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get category by ID
 router.get('/:id', async (req, res) => {
   try {
     const result = await query(
@@ -52,7 +49,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create category (Admin only)
 router.post('/', authenticate, authorizeAdmin, [
   body('name').notEmpty().withMessage('Category name is required'),
   body('parent_id').optional().isInt(),
@@ -67,7 +63,6 @@ router.post('/', authenticate, authorizeAdmin, [
     const { name, parent_id, level, image_url, is_active } = req.body;
     const slug = name.toLowerCase().replace(/\s+/g, '-');
 
-    // Validate parent_id if provided
     if (parent_id) {
       const parentCheck = await query('SELECT * FROM categories WHERE id = $1', [parent_id]);
       if (parentCheck.rows.length === 0) {
@@ -89,7 +84,6 @@ router.post('/', authenticate, authorizeAdmin, [
   }
 });
 
-// Update category (Admin only)
 router.put('/:id', authenticate, authorizeAdmin, async (req, res) => {
   try {
     const { name, parent_id, level, image_url, is_active } = req.body;
@@ -141,10 +135,8 @@ router.put('/:id', authenticate, authorizeAdmin, async (req, res) => {
   }
 });
 
-// Delete category (Admin only)
 router.delete('/:id', authenticate, authorizeAdmin, async (req, res) => {
   try {
-    // Check if category has children
     const childrenCheck = await query(
       'SELECT COUNT(*) FROM categories WHERE parent_id = $1',
       [req.params.id]
@@ -154,7 +146,6 @@ router.delete('/:id', authenticate, authorizeAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Cannot delete category with subcategories' });
     }
 
-    // Check if category has products
     const productsCheck = await query(
       'SELECT COUNT(*) FROM products WHERE category_id = $1',
       [req.params.id]

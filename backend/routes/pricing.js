@@ -3,7 +3,6 @@ const router = express.Router();
 const { query } = require('../config/database');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
 
-// Get price list (All products with pricing)
 router.get('/', async (req, res) => {
   try {
     const result = await query(
@@ -23,7 +22,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Update product price (Admin only)
 router.put('/:productId', authenticate, authorizeAdmin, async (req, res) => {
   try {
     const { price } = req.body;

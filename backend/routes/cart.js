@@ -4,7 +4,6 @@ const { query } = require('../config/database');
 const { authenticate, authorizeCustomer } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Get cart items (Customer only)
 router.get('/', authenticate, authorizeCustomer, async (req, res) => {
   try {
     const result = await query(
@@ -31,7 +30,6 @@ router.get('/', authenticate, authorizeCustomer, async (req, res) => {
   }
 });
 
-// Add to cart (Customer only)
 router.post('/', authenticate, authorizeCustomer, [
   body('product_id').notEmpty().withMessage('Product ID is required'),
   body('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
@@ -45,20 +43,17 @@ router.post('/', authenticate, authorizeCustomer, [
     const { product_id, quantity, specifications } = req.body;
     const user_id = req.user.id;
 
-    // Check if product exists
     const productCheck = await query('SELECT * FROM products WHERE id = $1 AND is_active = true', [product_id]);
     if (productCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    // Check if item already in cart
     const existingItem = await query(
       'SELECT * FROM cart_items WHERE user_id = $1 AND product_id = $2',
       [user_id, product_id]
     );
 
     if (existingItem.rows.length > 0) {
-      // Update quantity
       const result = await query(
         `UPDATE cart_items 
          SET quantity = quantity + $1, specifications = $2, updated_at = NOW()
@@ -69,7 +64,6 @@ router.post('/', authenticate, authorizeCustomer, [
       return res.json({ item: result.rows[0] });
     }
 
-    // Add new item
     const result = await query(
       `INSERT INTO cart_items (user_id, product_id, quantity, specifications, created_at)
        VALUES ($1, $2, $3, $4, NOW())
@@ -84,7 +78,6 @@ router.post('/', authenticate, authorizeCustomer, [
   }
 });
 
-// Update cart item (Customer only)
 router.put('/:id', authenticate, authorizeCustomer, async (req, res) => {
   try {
     const { quantity, specifications } = req.body;
@@ -122,7 +115,6 @@ router.put('/:id', authenticate, authorizeCustomer, async (req, res) => {
   }
 });
 
-// Remove from cart (Customer only)
 router.delete('/:id', authenticate, authorizeCustomer, async (req, res) => {
   try {
     const result = await query(
@@ -141,7 +133,6 @@ router.delete('/:id', authenticate, authorizeCustomer, async (req, res) => {
   }
 });
 
-// Clear cart (Customer only)
 router.delete('/', authenticate, authorizeCustomer, async (req, res) => {
   try {
     await query('DELETE FROM cart_items WHERE user_id = $1', [req.user.id]);

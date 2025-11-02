@@ -1,5 +1,3 @@
--- Printing Software Database Schema
-
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -118,7 +116,6 @@ CREATE TABLE IF NOT EXISTS complaints (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_categories_parent ON categories(parent_id);
@@ -132,7 +129,5 @@ CREATE INDEX IF NOT EXISTS idx_transactions_order ON transactions(order_id);
 CREATE INDEX IF NOT EXISTS idx_complaints_user ON complaints(user_id);
 CREATE INDEX IF NOT EXISTS idx_complaints_status ON complaints(status);
 
--- Note: Default admin user will be created by running a script after migration
--- Or create manually: email: admin@printing.com, password: admin123
 -- The password hash for 'admin123' is: $2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
 

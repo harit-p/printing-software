@@ -6,7 +6,6 @@ const { query } = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Register
 router.post('/register', [
   body('name').notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Valid email is required'),
@@ -22,7 +21,6 @@ router.post('/register', [
 
     const { name, email, password, phone, role, company, address } = req.body;
 
-    // Check if user exists
     const existingUser = await query(
       'SELECT * FROM users WHERE email = $1',
       [email]
@@ -32,10 +30,8 @@ router.post('/register', [
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert user (company and address are optional)
     const result = await query(
       `INSERT INTO users (name, email, password, phone, role, company, address, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
@@ -45,7 +41,6 @@ router.post('/register', [
 
     const user = result.rows[0];
 
-    // Create wallet for customer
     if (role === 'customer') {
       await query(
         'INSERT INTO wallets (user_id, balance, created_at) VALUES ($1, 0, NOW())',
@@ -53,7 +48,6 @@ router.post('/register', [
       );
     }
 
-    // Generate JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
@@ -88,7 +82,6 @@ router.post('/register', [
   }
 });
 
-// Login
 router.post('/login', [
   body('email').isEmail().withMessage('Valid email is required'),
   body('password').notEmpty().withMessage('Password is required'),
@@ -101,7 +94,6 @@ router.post('/login', [
 
     const { email, password } = req.body;
 
-    // Find user
     const result = await query(
       'SELECT * FROM users WHERE email = $1',
       [email]
@@ -113,13 +105,11 @@ router.post('/login', [
 
     const user = result.rows[0];
 
-    // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Generate JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
@@ -145,7 +135,6 @@ router.post('/login', [
   }
 });
 
-// Get current user
 router.get('/me', authenticate, async (req, res) => {
   try {
     const result = await query(
@@ -164,7 +153,6 @@ router.get('/me', authenticate, async (req, res) => {
   }
 });
 
-// Change Password
 router.post('/change-password', authenticate, [
   body('currentPassword').notEmpty().withMessage('Current password is required'),
   body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
@@ -178,22 +166,18 @@ router.post('/change-password', authenticate, [
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.id;
 
-    // Get current user
     const result = await query('SELECT password FROM users WHERE id = $1', [userId]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Verify current password
     const isValidPassword = await bcrypt.compare(currentPassword, result.rows[0].password);
     if (!isValidPassword) {
       return res.status(400).json({ error: 'Current password is incorrect' });
     }
 
-    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password
     await query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, userId]);
 
     res.json({ message: 'Password changed successfully' });

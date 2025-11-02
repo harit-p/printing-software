@@ -8,7 +8,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware - CORS configuration (must be before routes)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
@@ -30,7 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Also use cors middleware for additional support
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://printing-software-frontend.onrender.com'],
   credentials: true,
@@ -42,15 +40,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database connection
 const db = require('./config/database');
 
-// Test database connection
 db.connect()
   .then(() => console.log('✅ Database connected successfully'))
   .catch(err => console.error('❌ Database connection error:', err));
 
-// Routes
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/categories', require('./routes/categories'));
 app.use('/api/products', require('./routes/products'));
@@ -63,17 +59,14 @@ app.use('/api/pricing', require('./routes/pricing'));
 app.use('/api/wallet', require('./routes/wallet'));
 app.use('/api/admin', require('./routes/admin'));
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Health check endpoint for Render
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
@@ -82,7 +75,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({

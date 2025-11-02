@@ -10,12 +10,9 @@ const api = axios.create({
   },
 })
 
-// Add token to requests
 api.interceptors.request.use((config) => {
-  // Get current token, or try to get token based on URL path
   let token = Cookies.get('token')
   
-  // If no current token, try to get role-specific token based on URL
   if (!token && typeof window !== 'undefined') {
     const path = window.location.pathname
     if (path.startsWith('/admin')) {
@@ -24,7 +21,6 @@ api.interceptors.request.use((config) => {
       token = Cookies.get('token_customer')
     }
     
-    // If found role-specific token, update current session
     if (token) {
       const role = path.startsWith('/admin') ? 'admin' : 'customer'
       Cookies.set('token', token, { expires: 7, path: '/' })
@@ -38,12 +34,10 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Handle response errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Unauthorized - try to switch to role-specific token if available
       if (typeof window !== 'undefined') {
         const path = window.location.pathname
         let roleToken = null
@@ -57,15 +51,12 @@ api.interceptors.response.use(
           role = 'customer'
         }
         
-        // If role-specific token exists, switch to it
         if (roleToken && role) {
           Cookies.set('token', roleToken, { expires: 7, path: '/' })
           Cookies.set('role', role, { expires: 7, path: '/' })
-          // Retry the request
           return api.request(error.config)
         }
         
-        // Otherwise clear and redirect to login
         Cookies.remove('token', { path: '/' })
         Cookies.remove('role', { path: '/' })
         window.location.href = path.startsWith('/admin') ? '/admin/login' : '/customer/login'

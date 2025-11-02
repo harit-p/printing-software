@@ -96,7 +96,6 @@ export default function AdminLogin() {
       console.log('Setting error message:', errorMessage)
       setSubmitError(errorMessage)
       
-      // Show toast with longer duration
       toast.error(errorMessage, { 
         duration: 6000,
         position: 'top-center',
@@ -110,7 +109,6 @@ export default function AdminLogin() {
         }
       })
       
-      // Keep error visible for 6 seconds
       setTimeout(() => {
         setSubmitError('')
       }, 6000)

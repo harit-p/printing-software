@@ -1,11 +1,9 @@
 import Cookies from 'js-cookie'
 
 export const setAuthToken = (token: string, role: string) => {
-  // Store role-specific tokens to allow multiple sessions
   Cookies.set(`token_${role}`, token, { expires: 7, path: '/' })
   Cookies.set(`role_${role}`, role, { expires: 7, path: '/' })
   
-  // Also store current active session
   Cookies.set('token', token, { expires: 7, path: '/' })
   Cookies.set('role', role, { expires: 7, path: '/' })
 }

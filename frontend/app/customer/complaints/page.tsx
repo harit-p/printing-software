@@ -32,13 +32,11 @@ export default function ComplaintsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      // Prepare data for API - only send order_id if it's not empty
       const dataToSend: any = {
         subject: formData.subject.trim(),
         description: formData.description.trim(),
       }
       
-      // Only include order_id if it's provided and not empty
       if (formData.order_id && formData.order_id.trim()) {
         const orderIdNum = parseInt(formData.order_id.trim())
         if (!isNaN(orderIdNum)) {

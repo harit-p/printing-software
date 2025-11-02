@@ -20,7 +20,6 @@ function ProductsContent() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Read category_id from URL query params
     const categoryIdFromUrl = searchParams.get('category_id')
     if (categoryIdFromUrl) {
       setSelectedCategory(categoryIdFromUrl)
@@ -34,7 +33,6 @@ function ProductsContent() {
     fetchProducts()
   }, [selectedCategory, searchTerm])
 
-  // Reset search term when category changes from URL
   useEffect(() => {
     const categoryIdFromUrl = searchParams.get('category_id')
     if (categoryIdFromUrl && categoryIdFromUrl !== selectedCategory) {

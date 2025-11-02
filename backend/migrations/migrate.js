@@ -17,11 +17,9 @@ async function migrate() {
   try {
     console.log('🔄 Starting database migration...');
 
-    // Read SQL file
     const sqlPath = path.join(__dirname, 'schema.sql');
     const sql = fs.readFileSync(sqlPath, 'utf8');
 
-    // Execute SQL
     await pool.query(sql);
 
     console.log('✅ Database migration completed successfully!');

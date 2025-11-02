@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import AdminLayout from '@/components/AdminLayout'
 import { productAPI, categoryAPI } from '@/lib/api'
 import toast from 'react-hot-toast'
-import Link from 'next/link'
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([])

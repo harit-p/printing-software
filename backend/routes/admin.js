@@ -3,10 +3,8 @@ const router = express.Router();
 const { query } = require('../config/database');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
 
-// Admin dashboard stats
 router.get('/dashboard', authenticate, authorizeAdmin, async (req, res) => {
   try {
-    // Total orders
     const ordersResult = await query(
       `SELECT 
         COUNT(*) as total_orders,
@@ -17,22 +15,18 @@ router.get('/dashboard', authenticate, authorizeAdmin, async (req, res) => {
        FROM orders`
     );
 
-    // Total customers
     const customersResult = await query(
       "SELECT COUNT(*) as total_customers FROM users WHERE role = 'customer'"
     );
 
-    // Total products
     const productsResult = await query(
       'SELECT COUNT(*) as total_products FROM products WHERE is_active = true'
     );
 
-    // Pending complaints
     const complaintsResult = await query(
       "SELECT COUNT(*) as pending_complaints FROM complaints WHERE status = 'open'"
     );
 
-    // Recent orders
     const recentOrdersResult = await query(
       `SELECT o.*, u.name as customer_name
        FROM orders o
@@ -41,7 +35,6 @@ router.get('/dashboard', authenticate, authorizeAdmin, async (req, res) => {
        LIMIT 10`
     );
 
-    // Revenue chart data (last 30 days)
     const revenueChartResult = await query(
       `SELECT 
         DATE(created_at) as date,

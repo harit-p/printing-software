@@ -5,10 +5,8 @@ async function seedData() {
   try {
     console.log('🌱 Starting to seed sample data...\n');
 
-    // 1. Create Categories
     console.log('📁 Creating categories...');
     
-    // Main categories (Level 1)
     const businessCards = await query(
       `INSERT INTO categories (name, slug, parent_id, level, is_active, created_at)
        VALUES ('Business Cards', 'business-cards', NULL, 1, true, NOW())
@@ -45,7 +43,6 @@ async function seedData() {
     const letterheadsId = letterheads.rows[0].id;
     console.log(`✅ Created: ${letterheads.rows[0].name} (ID: ${letterheadsId})`);
 
-    // Sub-categories (Level 2) for Business Cards
     const standardCards = await query(
       `INSERT INTO categories (name, slug, parent_id, level, is_active, created_at)
        VALUES ('Standard Business Cards', 'standard-business-cards', $1, 2, true, NOW())
@@ -62,7 +59,6 @@ async function seedData() {
     );
     console.log(`✅ Created: ${premiumCards.rows[0].name}`);
 
-    // Sub-categories for Flyers
     const singleFlyers = await query(
       `INSERT INTO categories (name, slug, parent_id, level, is_active, created_at)
        VALUES ('Single Sided Flyers', 'single-sided-flyers', $1, 2, true, NOW())
@@ -81,7 +77,6 @@ async function seedData() {
 
     console.log('\n📦 Creating products...\n');
 
-    // 2. Create Products with Images
     const products = [
       {
         name: 'Premium Business Cards - Matte Finish',

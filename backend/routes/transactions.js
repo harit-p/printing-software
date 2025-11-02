@@ -3,7 +3,6 @@ const router = express.Router();
 const { query } = require('../config/database');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
 
-// Get all transactions (Admin only)
 router.get('/', authenticate, authorizeAdmin, async (req, res) => {
   try {
     const { type, start_date, end_date } = req.query;
@@ -47,7 +46,6 @@ router.get('/', authenticate, authorizeAdmin, async (req, res) => {
   }
 });
 
-// Get transaction by order ID
 router.get('/order/:orderId', authenticate, async (req, res) => {
   try {
     let sql = `

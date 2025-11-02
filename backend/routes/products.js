@@ -4,7 +4,6 @@ const { query } = require('../config/database');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
-// Get all products (Customer & Admin)
 router.get('/', async (req, res) => {
   try {
     const { category_id, search, min_price, max_price } = req.query;
@@ -49,7 +48,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get product by ID
 router.get('/:id', async (req, res) => {
   try {
     const result = await query(
@@ -71,7 +69,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create product (Admin only)
 router.post('/', authenticate, authorizeAdmin, [
   body('name').notEmpty().withMessage('Product name is required'),
   body('category_id').notEmpty().withMessage('Category is required'),
@@ -116,7 +113,6 @@ router.post('/', authenticate, authorizeAdmin, [
   }
 });
 
-// Update product (Admin only)
 router.put('/:id', authenticate, authorizeAdmin, async (req, res) => {
   try {
     const {
@@ -181,10 +177,8 @@ router.put('/:id', authenticate, authorizeAdmin, async (req, res) => {
   }
 });
 
-// Delete product (Admin only)
 router.delete('/:id', authenticate, authorizeAdmin, async (req, res) => {
   try {
-    // Check if product is in any orders
     const ordersCheck = await query(
       'SELECT COUNT(*) FROM order_items WHERE product_id = $1',
       [req.params.id]
